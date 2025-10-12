@@ -10,14 +10,28 @@
 # Hämta data från def get_cpu_usage(), def get_memory_usage() och def get_disk_usage()
 # Visa data i någon form av UI som uppdateras varje sekund 
 # Skriv ut att användaren kan trycka enter för att återgår den till huvudmenyn
-import psutil
-import time
-import msvcrt
 
-done_monitoring = False
+import psutil # To get system usage
+import time # To create delays
+import msvcrt # Only for Windows, for detecting key presses
+
+class Alarm:
+    def __init__(self, alarm_active_at, alarm_type):
+        self.alarm_active_at = alarm_active_at
+        self.alarm_type = alarm_type
+
+    def __str__(self):
+        return f"Alarm typ: {self.alarm_type}, aktiveras vid {self.alarm_active_at}%"
+
+alarm_list = []
+
 start = True
 
+# Main menu loop
 while(start):
+    done_monitoring = False
+
+    print()
     print("1: Starta övervakning")
     print("2: Skapa larm")
     print("3: Konfigurera larm")
@@ -44,7 +58,27 @@ while(start):
 
     
     elif menu_input == "2":
-        pass
+        print("1: CPU")
+        print("2: ")
+        print("3: ")
+        print("4: ")
+        create_alarm = input("Välj vilket typ av larm du vill skapa: ")
+
+        if create_alarm == "1":
+            cpu_alarm_type = "CPU"
+            cpu_alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
+            alarm_dict = Alarm(cpu_alarm_active_at, cpu_alarm_type)
+            alarm_list.append(alarm_dict)
+
+            print("Alarm har blivit tillagt: ")
+            print(f"{alarm_dict}")
+
+        elif create_alarm == "2":
+            pass
+        elif create_alarm == "3":
+            pass
+        elif create_alarm == "4":
+            pass
 
     elif menu_input == "3":
         pass
