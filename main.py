@@ -16,26 +16,39 @@ import time # To create delays
 import msvcrt # Only for Windows, for detecting key presses
 
 class Alarm:
-    def __init__(self, alarm_active_at, alarm_type):
+    alarm_list=[]
+
+    def __init__(self, alarm_active_at, alarm_type, alarm_name=None):
         self.alarm_active_at = alarm_active_at
         self.alarm_type = alarm_type
+        self.alarm_name = alarm_name
 
     def __str__(self):
-        return f"Alarm typ: {self.alarm_type}, aktiveras vid {self.alarm_active_at}%"
+        return f" {self.alarm_type}-alarm: {self.alarm_name} aktiveras vid {self.alarm_active_at}%"
+    
+    def add_alarm(alarm):
+        Alarm.alarm_list.append(alarm)
+        print(f"Skapat alarm: \n{alarm}")
+        return alarm
 
-alarm_list = []
+#When an alarm reach the set % it will type out a message
+def monitor(alarm_list):
+
+    pass
+
 
 start = True
 
 # Main menu loop
 while(start):
     done_monitoring = False
+    alarm_menu = True
 
     print()
     print("1: Starta övervakning")
-    print("2: Skapa larm")
-    print("3: Konfigurera larm")
-    print("4: Larm lista")
+    print("2: Skapa alarm")
+    print("3: Alarm lista")
+    print("4: Konfigurera alarm")
     print("5: Avsluta program")
 
     menu_input = input("Välj ett alternativ: ")
@@ -58,30 +71,43 @@ while(start):
 
     
     elif menu_input == "2":
-        print("1: CPU")
-        print("2: ")
-        print("3: ")
-        print("4: ")
-        create_alarm = input("Välj vilket typ av larm du vill skapa: ")
+        while (alarm_menu):
+            print("1: CPU")
+            print("2: Minne")
+            print("3: Disk")
+            print("4: Tillbaka till huvudmeny")
+            create_alarm = input("Välj vilket typ av larm du vill skapa: ")
 
-        if create_alarm == "1":
-            cpu_alarm_type = "CPU"
-            cpu_alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
-            alarm_dict = Alarm(cpu_alarm_active_at, cpu_alarm_type)
-            alarm_list.append(alarm_dict)
+            if create_alarm == "1":
+                alarm_name = input("Ange ett namn för larmet: ")
+                alarm_type = "CPU"
+                alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
+                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
+                alarm_added = Alarm.add_alarm(new_alarm)
 
-            print("Alarm har blivit tillagt: ")
-            print(f"{alarm_dict}")
+            elif create_alarm == "2":
+                alarm_name = input("Ange ett namn för larmet: ")
+                alarm_type = "Minne"
+                alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
+                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
+                alarm_added = Alarm.add_alarm(new_alarm)
+                
+            elif create_alarm == "3":
+                alarm_name = input("Ange ett namn för larmet: ")
+                alarm_type = "Disk"
+                alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
+                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
+                alarm_added = Alarm.add_alarm(new_alarm)
 
-        elif create_alarm == "2":
-            pass
-        elif create_alarm == "3":
-            pass
-        elif create_alarm == "4":
-            pass
+            elif create_alarm == "4":
+                alarm_menu = False
+                pass
 
     elif menu_input == "3":
-        pass
+        for alarm in Alarm.alarm_list:
+            print(alarm)
+        input("Tryck Enter för att gå tillbaka till huvudmenyn")
+
 
     elif menu_input == "4":
         pass
