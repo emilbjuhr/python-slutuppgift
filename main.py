@@ -14,30 +14,35 @@
 import psutil # To get system usage
 import time # To create delays
 import msvcrt # Only for Windows, for detecting key presses
+from alarm_class import Alarm
 
-class Alarm:
-    alarm_list=[]
 
-    def __init__(self, alarm_active_at, alarm_type, alarm_name=None):
-        self.alarm_active_at = alarm_active_at
-        self.alarm_type = alarm_type
-        self.alarm_name = alarm_name
+def add_alarm(alarm):
+    alarm_list.append(alarm)
+    print(f"Skapat alarm: \n{alarm}")
+    return alarm
 
-    def __str__(self):
-        return f" {self.alarm_type}-alarm: {self.alarm_name} aktiveras vid {self.alarm_active_at}%"
-    
-    def add_alarm(alarm):
-        Alarm.alarm_list.append(alarm)
-        print(f"Skapat alarm: \n{alarm}")
-        return alarm
-
-#When an alarm reach the set % it will type out a message
-def monitor(alarm_list):
-
-    pass
-
+def get_number(number_text):
+    while True:
+        try:
+            number = int(input(number_text))
+            if number < 1 or number > 100:
+                raise ValueError
+        except ValueError:
+            print("Det måste vara ett nummer mellan 1-100")
+        else:
+            return number
+        
+def monitor_alarms():
+    if alarm.alarm_type == "CPU" and cpu >= alarm.alarm_active_at:
+        print(f"VARNING! {alarm} har aktiverats")
+    elif alarm.alarm_type == "Minne" and mem.percent >= alarm.alarm_active_at:
+        print(f"VARNING! {alarm} har aktiverats")
+    elif alarm.alarm_type == "Disk" and disk.percent >= alarm.alarm_active_at:
+        print(f"VARNING! {alarm} har aktiverats")
 
 start = True
+alarm_list=[]
 
 # Main menu loop
 while(start):
@@ -48,70 +53,86 @@ while(start):
     print("1: Starta övervakning")
     print("2: Skapa alarm")
     print("3: Alarm lista")
-    print("4: Konfigurera alarm")
+    print("4: Starta larmövervakning")
     print("5: Avsluta program")
-
-    menu_input = input("Välj ett alternativ: ")
-
-    if menu_input == "1":
-        while(not done_monitoring):
-            cpu_usage = psutil.cpu_percent(interval=1,percpu=False)
-            print(f"{cpu_usage} % CPU-användning")
-            mem = psutil.virtual_memory()
-            print(f"{mem.percent} % Minnes-användning")
-            disk_usage = psutil.disk_usage("/")
-            print(f"{disk_usage.percent} % Disk-användning")
-            print("Tryck Enter för att avsluta övervakning")
-            print("----")
-            time.sleep(2)
-            if msvcrt.kbhit():
-                key = msvcrt.getch()
-                if key == b'\r':
-                    done_monitoring = True
-
-    
-    elif menu_input == "2":
-        while (alarm_menu):
-            print("1: CPU")
-            print("2: Minne")
-            print("3: Disk")
-            print("4: Tillbaka till huvudmeny")
-            create_alarm = input("Välj vilket typ av larm du vill skapa: ")
-
-            if create_alarm == "1":
-                alarm_name = input("Ange ett namn för larmet: ")
-                alarm_type = "CPU"
-                alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
-                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
-                alarm_added = Alarm.add_alarm(new_alarm)
-
-            elif create_alarm == "2":
-                alarm_name = input("Ange ett namn för larmet: ")
-                alarm_type = "Minne"
-                alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
-                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
-                alarm_added = Alarm.add_alarm(new_alarm)
-                
-            elif create_alarm == "3":
-                alarm_name = input("Ange ett namn för larmet: ")
-                alarm_type = "Disk"
-                alarm_active_at = input("Ange vid vilken procent du vill bli larmad: ")
-                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
-                alarm_added = Alarm.add_alarm(new_alarm)
-
-            elif create_alarm == "4":
-                alarm_menu = False
-                pass
-
-    elif menu_input == "3":
-        for alarm in Alarm.alarm_list:
-            print(alarm)
-        input("Tryck Enter för att gå tillbaka till huvudmenyn")
-
-
-    elif menu_input == "4":
-        pass
-
-    elif menu_input == "5":
-        print("Avslutar programmet")
-        start = False
+    vaild_input = False
+    while(not vaild_input):
+        menu_input = input("Välj ett alternativ: ")
+        match menu_input:
+            case "1":
+                while(not done_monitoring):
+                    cpu_usage = psutil.cpu_percent(interval=1,percpu=False)
+                    print(f"{cpu_usage} % CPU-användning")
+                    mem = psutil.virtual_memory()
+                    print(f"{mem.percent} % Minnes-användning")
+                    disk_usage = psutil.disk_usage("/")
+                    print(f"{disk_usage.percent} % Disk-användning")
+                    print("Tryck Enter för att avsluta övervakning")
+                    print("----")
+                    time.sleep(2)
+                    if msvcrt.kbhit():
+                        key = msvcrt.getch()
+                        if key == b'\r':
+                            done_monitoring = True
+                vaild_input = True
+            case "2":
+                while (alarm_menu):
+                    print("1: CPU")
+                    print("2: Minne")
+                    print("3: Disk")
+                    print("4: Tillbaka till huvudmeny")
+                    alarm_input = False
+                    while(not alarm_input):
+                        create_alarm_input = input("Välj ett alternativ: ")
+                        match create_alarm_input:
+                            case "1":
+                                alarm_name = input("Ange ett namn för larmet: ")
+                                alarm_type = "CPU"
+                                alarm_active_at = get_number("Ange vid vilken procent du vill bli larmad: ")
+                                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
+                                alarm_added = add_alarm(new_alarm)
+                                alarm_input = True
+                            case "2":
+                                alarm_name = input("Ange ett namn för larmet: ")
+                                alarm_type = "Minne"
+                                alarm_active_at = get_number("Ange vid vilken procent du vill bli larmad: ")
+                                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
+                                alarm_added = add_alarm(new_alarm)
+                                alarm_input = True
+                            case "3":
+                                alarm_name = input("Ange ett namn för larmet: ")
+                                alarm_type = "Disk"
+                                alarm_active_at = get_number("Ange vid vilken procent du vill bli larmad: ")
+                                new_alarm = Alarm(alarm_active_at, alarm_type, alarm_name)
+                                alarm_added = add_alarm(new_alarm)
+                                alarm_input = True
+                            case "4":
+                                alarm_menu = False
+                                alarm_input = True
+                            case _:
+                                print("Det måste vara 1-4")
+                vaild_input = True
+            case "3":
+                sorted_alarms = sorted(alarm_list, key=lambda a: a.alarm_type)
+                list(map(print, sorted_alarms))
+                input("Tryck Enter för att gå tillbaka till huvudmenyn")
+                vaild_input = True
+            case "4":
+                mem = psutil.virtual_memory()
+                cpu = psutil.cpu_percent(interval=1,percpu=False)
+                disk = psutil.disk_usage("/")
+                while done_monitoring == False:
+                    for alarm in alarm_list:
+                        monitor_alarms()
+                    print("Tryck Enter för att avsluta larmövervakning")
+                    print("----")
+                    time.sleep(10)
+                    if msvcrt.kbhit():
+                        key = msvcrt.getch()
+                        if key == b'\r':
+                            done_monitoring = True
+                vaild_input = True
+            case "5":
+                start = False
+            case _:
+                print("Det måste vara 1-5")
