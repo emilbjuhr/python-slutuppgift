@@ -1,6 +1,6 @@
 import psutil # To get system usage
 import time # To create delays
-import msvcrt # Only for Windows, for detecting key presses
+import keyboard  # For detecting key presses
 from alarm_class import Alarm
 
 def add_alarm(alarm):
@@ -105,10 +105,8 @@ def main():
                     while(not done_monitoring):
                         print_monitor_data()
                         time.sleep(2)
-                        if msvcrt.kbhit():
-                            key = msvcrt.getch()
-                            if key == b'\r':
-                                done_monitoring = True
+                        if keyboard.is_pressed('enter'):
+                            done_monitoring = True
                     vaild_input = True
                 case "2":
                     while (alarm_menu):
@@ -155,10 +153,8 @@ def main():
                         print("Tryck Enter för att avsluta larmövervakning")
                         print("----")
                         time.sleep(2)
-                        if msvcrt.kbhit():
-                            key = msvcrt.getch()
-                            if key == b'\r':
-                                done_monitoring = True
+                        if keyboard.is_pressed('enter'):
+                            done_monitoring = True
                     vaild_input = True
                 case "5":
                     write_alarms_to_file(alarm_list)
