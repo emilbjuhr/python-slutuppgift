@@ -79,11 +79,6 @@ def show_main_menu():
     print("4: Starta larmövervakning")
     print("5: Avsluta program")
 
-global cpu, mem, disk
-cpu = psutil.cpu_percent(interval=1,percpu=False)
-mem = psutil.virtual_memory()
-disk = psutil.disk_usage("/")
-
 start = True
 alarm_list = read_alarms_from_file()
 
