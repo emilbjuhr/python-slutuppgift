@@ -7,3 +7,8 @@ class Alarm:
 
     def __str__(self):
         return f" {self.alarm_type}-alarm: {self.alarm_name} aktiveras vid {self.alarm_active_at}%"
+    
+    def __repr__(self):
+        return f"{self.alarm_type} {self.alarm_name} {self.alarm_active_at}"
+    
+    
